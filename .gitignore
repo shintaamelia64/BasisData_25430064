@@ -1,0 +1,13 @@
+# Konfigurasi XAMPP dan OS
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+
+# Folder atau file konfigurasi sensitif
+config.php
+.env
+secret/
+
+# File backup database lokal (opsional, agar tidak ikut ter-push jika ukurannya besar)
+*.sql~

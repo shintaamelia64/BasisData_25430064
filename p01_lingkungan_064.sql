@@ -1,24 +1,29 @@
--- Nama: Shinta Amelia
--- NIM: 25430064
--- Tema: Toko Elektronik dan Aksesoris Komputer
+-- =================================================================
+-- Modul 1: Lingkungan Kerja MariaDB & Git
+-- Nama  : Shinta Amelia
+-- NIM   : <NIM_Anda>
+-- =================================================================
 
-CREATE DATABASE IF NOT EXISTS toko_elektronik_064;
-USE toko_elektronik_064;
+-- 1. Membuat Basis Data Praktikum (Kopma)
+CREATE DATABASE IF NOT EXISTS kopma_<3_digit_terakhir_nim> 
+CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS pelanggan (
-    id_pelanggan INT AUTO_INCREMENT PRIMARY KEY,
-    nama_pelanggan VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    no_telepon VARCHAR(15) NOT NULL,
-    alamat TEXT NOT NULL
-);
+-- 2. Membuat Akun Pengguna Praktikum & Memberikan Hak Akses
+CREATE USER IF NOT EXISTS 'mhs_<3_digit_terakhir_nim>'@'localhost' 
+IDENTIFIED BY '<password_kerja_aman>';
 
-CREATE TABLE IF NOT EXISTS produk (
-    id_produk INT AUTO_INCREMENT PRIMARY KEY,
-    nama_produk VARCHAR(150) NOT NULL,
-    harga DECIMAL(10,2) NOT NULL,
-    stok INT NOT NULL
-);
+GRANT ALL PRIVILEGES ON kopma_<3_digit_terakhir_nim>.* 
+TO 'mhs_<3_digit_terakhir_nim>'@'localhost';
 
-INSERT INTO produk (nama_produk, harga, stok) VALUES ('SSD Eksternal 512GB', 750000.00, 15);
-SELECT * FROM produk;
+-- 3. Membuat Basis Data Proyek Mandiri
+CREATE DATABASE IF NOT EXISTS <kode_tema>_<3_digit_terakhir_nim> 
+CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE USER IF NOT EXISTS 'dev_<3_digit_terakhir_nim>'@'localhost' 
+IDENTIFIED BY '<password_dev_aman>';
+
+GRANT ALL PRIVILEGES ON <kode_tema>_<3_digit_terakhir_nim>.* 
+TO 'dev_<3_digit_terakhir_nim>'@'localhost';
+
+-- Terapkan perubahan hak akses
+FLUSH PRIVILEGES; 
