@@ -1,29 +1,17 @@
--- =================================================================
--- Modul 1: Lingkungan Kerja MariaDB & Git
--- Nama  : Shinta Amelia
--- NIM   : <NIM_Anda>
--- =================================================================
+-- Modul 1: Lingkungan Kerja MariaDB dan Git
+-- NIM: 064
 
--- 1. Membuat Basis Data Praktikum (Kopma)
-CREATE DATABASE IF NOT EXISTS kopma_<3_digit_terakhir_nim> 
-CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS kopma_064 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- 2. Membuat Akun Pengguna Praktikum & Memberikan Hak Akses
-CREATE USER IF NOT EXISTS 'mhs_<3_digit_terakhir_nim>'@'localhost' 
-IDENTIFIED BY '<password_kerja_aman>';
+CREATE USER IF NOT EXISTS 'mhs_064'@'localhost' IDENTIFIED BY 'PasswordKerja';
 
-GRANT ALL PRIVILEGES ON kopma_<3_digit_terakhir_nim>.* 
-TO 'mhs_<3_digit_terakhir_nim>'@'localhost';
+GRANT ALL PRIVILEGES ON kopma_064.* TO 'mhs_064'@'localhost';
 
--- 3. Membuat Basis Data Proyek Mandiri
-CREATE DATABASE IF NOT EXISTS <kode_tema>_<3_digit_terakhir_nim> 
-CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+FLUSH PRIVILEGES;
 
-CREATE USER IF NOT EXISTS 'dev_<3_digit_terakhir_nim>'@'localhost' 
-IDENTIFIED BY '<password_dev_aman>';
 
-GRANT ALL PRIVILEGES ON <kode_tema>_<3_digit_terakhir_nim>.* 
-TO 'dev_<3_digit_terakhir_nim>'@'localhost';
+CREATE USER IF NOT EXISTS 'tamu_064'@'localhost' IDENTIFIED BY 'PasswordKerja';
 
--- Terapkan perubahan hak akses
-FLUSH PRIVILEGES; 
+GRANT ALL PRIVILEGES ON kopma_064.* TO 'tamu_064'@'localhost';
+
+FLUSH PRIVILEGES;
