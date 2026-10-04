@@ -1,0 +1,1 @@
+-e "-- Nama: Shinta Amelia\n-- NIM: 25430064\n-- Modul 1: Lingkungan Kerja (XAMPP & MariaDB)\n\nCREATE DATABASE IF NOT EXISTS praktikum_db_064;\nUSE praktikum_db_064;\n\nCREATE TABLE IF NOT EXISTS mahasiswa (\n    nim VARCHAR(10) PRIMARY KEY,\n    nama VARCHAR(100)\n);\n\nINSERT INTO mahasiswa VALUES ('25430064', 'Shinta Amelia');\nSELECT * FROM mahasiswa;" 
