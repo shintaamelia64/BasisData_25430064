@@ -1,1 +1,1 @@
--e "# Praktikum Basis Data - Modul 1\n\nRepositori ini dibuat untuk menyelesaikan tugas praktikum Basis Data Modul 1 mengenai instalasi lingkungan kerja dan penggunaan dasar Git/GitHub.\n\n## Identitas Mahasiswa\n* **Nama:** Shinta Amelia\n* **NIM:** 25430064\n* **Modul:** Modul 1 - Lingkungan Kerja (XAMPP & MariaDB)" 
+# Praktikum Basis Data - Modul 1 
