@@ -1,7 +1,7 @@
-# Dokumen Kebutuhan Data: Toko Daring Shinta (TokoSA)
+# Dokumen Kebutuhan Data:  Toko Daring Shinta
 
 ## 1. Latar Belakang dan Aktivitas Organisasi
-Organisasi fiktif ini bernama **Toko Daring Shinta (TokoSA)** dengan NIM **25430064**[cite: 1, 43]. Organisasi ini bergerak di bidang perdagangan elektronik yang menyediakan layanan jual beli produk secara online untuk memudahkan pelanggan memilih katalog, mengelola keranjang belanja, memproses pesanan, pembayaran, hingga pengiriman barang ke seluruh wilayah[cite: 24].
+Organisasi fiktif ini bernama **Toko Daring Shinta ** dengan NIM **25430064**[cite: 1, 43]. Organisasi ini bergerak di bidang perdagangan elektronik yang menyediakan layanan jual beli produk secara online untuk memudahkan pelanggan memilih katalog, mengelola keranjang belanja, memproses pesanan, pembayaran, hingga pengiriman barang ke seluruh wilayah[cite: 24].
 
 ## 2. Aktor dan Proses Bisnis (Tabel PB)
 | Kode | Proses Bisnis | Aktor | Pemicu |
