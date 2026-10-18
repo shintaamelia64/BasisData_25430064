@@ -2,7 +2,7 @@
 
 **Nama:** Shinta Amelia  
 **NIM:** 25430064  
-**Kelas:** Ilmu Komputer  
+**Kelas:** C 
 **Tema Proyek:** Toko Daring Shinta
 
 ---
