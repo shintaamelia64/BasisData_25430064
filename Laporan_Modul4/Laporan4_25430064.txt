@@ -1,0 +1,111 @@
+Laporan Praktikum Basis Data
+
+Nama: Shinta Amelia
+
+NPM: 25430064
+
+Kelas: C
+
+Program Studi: S1 Ilmu Komputer
+
+Pertemuan: 4 
+
+1. Tujuan Praktikum
+
+* Memahami konsep dan tahapan normalisasi basis data mulai dari *Unnormalized Form* (UNF), Bentuk Normal Pertama (1NF), Bentuk Normal Kedua (2NF), Bentuk Normal Ketiga (3NF), hingga *Boyce-Codd Normal Form* (BCNF).
+* Mengidentifikasi dependensi fungsional (*Functional Dependency*) pada studi kasus Koperasi Mahasiswa (Kopma) berdasarkan Aturan Bisnis (AB) yang berlaku.
+* Mentransformasikan dokumen transaksi mentah menjadi skema relasional yang bersih dari ketergantungan parsial dan ketergantungan transitif.
+* Menangani kasus atribut multi-nilai (seperti multi-nomor telepon pemasok) dan mendeteksi anomali pembaruan (*update anomaly*) dengan simulasi kueri SQL.
+
+2. Ringkasan Dasar Teori
+
+* Normalisasi Basis Data adalah proses pengorganisasian atribut data ke dalam tabel-tabel relasional untuk meminimalkan redundansi data dan mencegah anomali.
+* 1NF (*First Normal Form*): Setiap sel harus bernilai atomik (tidak ada grup berulang / *repeating group*).
+* 2NF (*Second Normal Form*): Memenuhi 1NF dan tidak memiliki ketergantungan parsial (*partial dependency*), yaitu seluruh atribut non-kunci bergantung penuh pada kunci primer komposit.
+* 3NF (*Third Normal Form*): Memenuhi 2NF dan tidak memiliki ketergantungan transitif (*transitive dependency*), yaitu atribut non-kunci tidak boleh bergantung pada atribut non-kunci lainnya.
+* BCNF (*Boyce-Codd Normal Form*): Kriteria lebih ketat dari 3NF di mana setiap penentu (*determinant*) pada ketergantungan fungsional harus merupakan Kunci Kandidat (*Candidate Key*).
+* *Update Anomaly*: Kondisi ketidakkonsistenan data ketika perubahan pada data yang redundan hanya memperbarui sebagian baris transaksi.
+
+3. Hasil Langkah Percobaan
+
+* **Unnormalized Form (UNF):**
+  Menggabungkan seluruh data transaksi mentah dari Nota Penjualan Kopma.
+  `KOPMA_UNF` (`no_nota_penjualan`, `tgl_penjualan`, `kode_petugas`, `nama_petugas`, `peran_petugas`, `no_anggota`, `nim_anggota`, `nama_anggota`, `prodi_anggota`, `no_hp_anggota`, `status_anggota`, `tgl_daftar_anggota`, `jumlah_poin`, { `kode_barang`, `nama_barang`, `kategori_barang`, `qty_detail_penjualan`, `harga_satuan_detail_penjualan`, `poin_didapat`, `poin_digunakan` }, `bayar_penjualan`, `no_faktur_pembelian`, `tgl_pembelian`, `nama_pemasok`, `telepon_pemasok`, `alamat_pemasok`, `status_pembelian`, `qty_detail_pembelian`, `harga_beli_detail_pembelian`)
+
+* **Bentuk Normal Pertama (1NF):**
+  Memisahkan kelompok berulang item barang menjadi nilai atomik dengan Kunci Primer Komposit (`no_nota_penjualan`, `kode_barang`).
+  `KOPMA_1NF` (<u>`no_nota_penjualan`</u>, <u>`kode_barang`</u>, `tgl_penjualan`, `kode_petugas`, `nama_petugas`, `peran_petugas`, `no_anggota`, `nim_anggota`, `nama_anggota`, `prodi_anggota`, `no_hp_anggota`, `status_anggota`, `tgl_daftar_anggota`, `jumlah_poin`, `nama_barang`, `kategori_barang`, `qty_detail_penjualan`, `harga_satuan_detail_penjualan`, `poin_didapat`, `poin_digunakan`, `bayar_penjualan`, `no_faktur_pembelian`, `tgl_pembelian`, `nama_pemasok`, `telepon_pemasok`, `alamat_pemasok`, `status_pembelian`, `qty_detail_pembelian`, `harga_beli_detail_pembelian`)
+
+* **Dependensi Fungsional (FD):**
+  * FD1: `no_nota_penjualan` $\rightarrow$ `tgl_penjualan`, `kode_petugas`, `no_anggota`, `bayar_penjualan`
+  * FD2: `kode_petugas` $\rightarrow$ `nama_petugas`, `peran_petugas`
+  * FD3: `no_anggota` $\rightarrow$ `nim_anggota`, `nama_anggota`, `prodi_anggota`, `no_hp_anggota`, `status_anggota`, `tgl_daftar_anggota`, `jumlah_poin`
+  * FD4: `kode_barang` $\rightarrow$ `nama_barang`, `kategori_barang`, `harga_jual_barang`, `stok_barang`, `stok_min_barang`
+  * FD5: (`no_nota_penjualan`, `kode_barang`) $\rightarrow$ `qty_detail_penjualan`, `harga_satuan_detail_penjualan`, `poin_didapat`, `poin_digunakan`
+  * FD6: `no_faktur_pembelian` $\rightarrow$ `tgl_pembelian`, `nama_pemasok`, `telepon_pemasok`, `alamat_pemasok`, `status_pembelian`
+  * FD7: (`no_faktur_pembelian`, `kode_barang`) $\rightarrow$ `qty_detail_pembelian`, `harga_beli_detail_pembelian`
+
+* **Skema Relasional Final (3NF / BCNF):**
+  Menggunakan *Surrogate Key* (`id_*`) sebagai Kunci Primer (PK) dan kode alami sebagai *Unique Key* (UQ):
+  * `petugas` (<u>`id_petugas`</u>, `kode_petugas` [UQ], `nama_petugas`, `peran_petugas`)
+  * `anggota` (<u>`id_anggota`</u>, `no_anggota` [UQ], `nim_anggota` [UQ], `nama_anggota`, `prodi_anggota`, `no_hp_anggota`, `status_anggota`, `tgl_daftar_anggota`, `jumlah_poin`)
+  * `barang` (<u>`id_barang`</u>, `kode_barang` [UQ], `nama_barang`, `kategori_barang`, `harga_jual_barang`, `stok_barang`, `stok_min_barang`)
+  * `pemasok` (<u>`id_pemasok`</u>, `nama_pemasok`, `telepon_pemasok`, `alamat_pemasok`)
+  * `penjualan` (<u>`id_penjualan`</u>, `no_nota_penjualan` [UQ], `id_petugas`*, `id_anggota`*, `tgl_penjualan`, `bayar_penjualan`)
+  * `detail_penjualan` (<u>`id_penjualan`*</u>, <u>`id_barang`*</u>, `qty_detail_penjualan`, `harga_satuan_detail_penjualan`, `poin_didapat`, `poin_digunakan`)
+  * `pembelian` (<u>`id_pembelian`</u>, `id_pemasok`*, `no_faktur_pembelian`, `tgl_pembelian`, `status_pembelian`)
+  * `detail_pembelian` (<u>`id_pembelian`*</u>, <u>`id_barang`*</u>, `qty_detail_pembelian`, `harga_beli_detail_pembelian`)
+
+4. Jawaban Titik Analisis
+
+* Nilai turunan (*derived values*) seperti subtotal, total bayar, dan kembalian tidak disimpan di dalam tabel operasional/transaksional.
+* Penjelasannya: Nilai-nilai tersebut dikalkulasikan secara *real-time* menggunakan kueri agregat SQL (`SUM`) untuk mencegah terjadinya anomali data dan inkonsistensi saat ada perubahan rincian harga atau kuantitas.
+
+5. Hasil Latihan dan Modifikasi
+
+* **Multi-Nomor Telepon Pemasok:**
+  Dipecah menjadi tabel terpisah berelasi *One-to-Many* untuk memenuhi aturan atomisitas 1NF:
+  * `pemasok` (<u>`id_pemasok`</u>, `nama_pemasok`, `alamat_pemasok`)
+  * `telepon_pemasok` (<u>`id_pemasok`*</u>, <u>`no_telepon`</u>)
+
+* **Contoh Data yang Melanggar 3NF (Tabel `penjualan`):**
+
+| no_nota | tanggal_jam | no_anggota | nama_anggota | total_bayar |
+| :--- | :--- | :--- | :--- | :--- |
+| PJ-2609-0142 | 2026-10-18 08:30 | A-012 | Shinta Amelia | 50000 |
+| PJ-2609-0155 | 2026-10-18 10:15 | A-012 | Shinta Amelia | 25000 |
+| PJ-2609-0189 | 2026-10-18 14:00 | A-012 | Shinta Amelia | 42000 |
+
+* **Simulasi Anomali Ubah (*Update Anomaly*):**
+  Jika anggota dengan `no_anggota = 'A-012'` merubah nama profilnya menjadi "Shinta Amelia Putri", sistem harus memperbarui seluruh baris transaksi lama. Apabila ada baris yang terlewat, data menjadi tidak konsisten (*inconsistent data*).
+
+```sql
+-- Kueri ini berisiko menyebabkan inkonsistensi jika ada transaksi yang terlewat
+UPDATE Penjualan
+SET nama_anggota = 'Shinta Amelia Putri'
+WHERE no_anggota = 'A-012';
+
+6. Tugas Mandiri: Milestone Proyek 04
+Menyelesaikan penataan ulang dokumen normalisasi dan skema relasional untuk tema studi kasus Koperasi Mahasiswa Sejahtera (Kopma) ke dalam format Markdown terstruktur (`p04_normalisasi_kopma_064.md` dan `p04_normalisasi_064.md`) serta melakukan sinkronisasi repositori Git.
+
+7. Pembahasan dan Kendala
+* **Pembahasan:** Normalisasi terbukti menghilangkan pengulangan data (*redundancy*) serta menyederhanakan pemeliharaan struktur data. Penggunaan *surrogate key* mempercepat proses *indexing* dan konsistensi relasi *Foreign Key*.
+* **Kendala:** Pengaturan ekstensi file `.md` pada sistem operasi Windows sempat tersembunyi (*hidden extension*), tetapi telah diatasi dengan menyesuaikan opsi tampilan file di Explorer.
+
+8. Kesimpulan
+1. Tahapan normalisasi hingga 3NF/BCNF berhasil memecah entitas tunggal yang berulang menjadi entitas-entitas spesifik yang saling berhubungan secara terstruktur.
+2. Anomali ubah dapat sepenuhnya dicegah dengan cara memisahkan atribut profil (seperti `nama_anggota`) ke dalam entitas tersendiri, sehingga perubahan data cukup dilakukan pada satu tempat (*single source of truth*).
+
+9. Pernyataan Penggunaan AI
+Praktikum ini memanfaatkan asisten AI sebagai media diskusi interaktif untuk menelaah aturan bisnis, memvalidasi dependensi fungsional, serta merancang kueri simulasi anomali ubah. Seluruh hasil akhir telah ditinjau dan disesuaikan secara mandiri oleh praktikan.
+
+10. Bukti Git
+* **Tautan Repositori:** `https://github.com/shintaamelia/basisdata-25430064`
+* **Hash Commit:** `a1b2c3d` *(Silakan sesuaikan dengan hash commit aktual dari perintah `git log`)*
+
+Checklist
+- [x] Dokumen UNF, 1NF, 2NF, 3NF/BCNF lengkap.
+- [x] Ketergantungan Fungsional (FD) terdokumentasi dengan baik.
+- [x] Skema relasional final dengan Kunci Pengganti (*Surrogate Key*) telah ditentukan.
+- [x] Bagian Latihan & Modifikasi (multi-telepon dan simulasi *update anomaly*) telah dikerjakan.
+- [x] Seluruh berkas `.md` telah di-*push* ke repositori GitHub.
