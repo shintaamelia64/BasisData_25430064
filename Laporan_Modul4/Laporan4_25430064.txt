@@ -101,7 +101,7 @@ Praktikum ini memanfaatkan asisten AI sebagai media diskusi interaktif untuk men
 
 10. Bukti Git
 * **Tautan Repositori:** `https://github.com/shintaamelia/basisdata-25430064`
-* **Hash Commit:** `a1b2c3d` *(Silakan sesuaikan dengan hash commit aktual dari perintah `git log`)*
+* **Hash Commit:** `234c61d` 
 
 Checklist
 - [x] Dokumen UNF, 1NF, 2NF, 3NF/BCNF lengkap.
