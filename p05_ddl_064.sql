@@ -1,128 +1,130 @@
--- =====================================================================
--- Nama      : Shinta Amelia
--- NPM       : 25430064
--- Modul     : Modul 5 (DDL dan Constraint) - Proyek Basis Data toko_daring_shinta
--- File      : p05_ddl_25430064.sql
--- =====================================================================
+-- ============================================================
+-- Berkas      : p05_ddl_064.sql
+-- Modul       : Modul 5 - DDL dan Constraint (Toko Daring Shinta)
+-- NPM         : 25430064
+-- Nama        : Shinta Amelia
+-- Deskripsi   : Skrip DDL pemodelan fisik basis data Toko Daring (toko_064)
+-- ============================================================
 
--- Pilih basis data proyek
-USE toko_daring_shinta;
+-- 1. Membuat dan menggunakan basis data proyek
+CREATE DATABASE IF NOT EXISTS toko_064
+  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- ---------------------------------------------------------------------
--- 1. PENGHAPUSAN TABEL (Urutan terbalik dari anak/detail ke induk)
--- ---------------------------------------------------------------------
-DROP TABLE IF EXISTS detail_pembelian;
-DROP TABLE IF EXISTS pembelian;
-DROP TABLE IF EXISTS detail_penjualan;
-DROP TABLE IF EXISTS penjualan;
-DROP TABLE IF EXISTS pemasok;
-DROP TABLE IF EXISTS barang;
-DROP TABLE IF EXISTS anggota;
-DROP TABLE IF EXISTS petugas;
+USE toko_064;
 
--- ---------------------------------------------------------------------
--- 2. PEMBUATAN TABEL INDUK (MASTER)
--- ---------------------------------------------------------------------
+-- ============================================================
+-- 2. Menghapus tabel jika sudah ada (urutan: Anak -> Induk)
+-- ============================================================
+DROP TABLE IF EXISTS pengiriman;
+DROP TABLE IF EXISTS pembayaran;
+DROP TABLE IF EXISTS detail_pesanan;
+DROP TABLE IF EXISTS pesanan;
+DROP TABLE IF EXISTS transaksi;
+DROP TABLE IF EXISTS produk;
+DROP TABLE IF EXISTS kategori;
+DROP TABLE IF EXISTS pelanggan;
 
--- Tabel Petugas
-CREATE TABLE petugas (
-    id_petugas SMALLINT NOT NULL AUTO_INCREMENT,
-    kode_petugas CHAR(3) NOT NULL,
-    nama_petugas VARCHAR(100) NOT NULL,
-    peran_petugas ENUM('kasir', 'gudang', 'ketua') NOT NULL,
-    PRIMARY KEY (id_petugas),
-    UNIQUE KEY uq_petugas_kode (kode_petugas)
+-- ============================================================
+-- 3. Membuat Tabel Master (Induk)
+-- ============================================================
+
+-- Tabel: pelanggan
+CREATE TABLE pelanggan (
+  id_pelanggan INT NOT NULL AUTO_INCREMENT,
+  no_pelanggan CHAR(8) NOT NULL,
+  nama_pelanggan VARCHAR(100) NOT NULL,
+  email_pelanggan VARCHAR(100) NOT NULL,
+  telepon_pelanggan VARCHAR(15) NULL,
+  alamat_pelanggan TEXT NULL,
+  tgl_daftar DATE NOT NULL,
+  PRIMARY KEY (id_pelanggan),
+  UNIQUE KEY uq_pelanggan_no (no_pelanggan),
+  UNIQUE KEY uq_pelanggan_email (email_pelanggan)
 ) ENGINE=InnoDB;
 
--- Tabel Anggota
-CREATE TABLE anggota (
-    id_anggota INT NOT NULL AUTO_INCREMENT,
-    no_anggota VARCHAR(20) NOT NULL,
-    nim_anggota CHAR(10) NOT NULL,
-    nama_anggota VARCHAR(100) NOT NULL,
-    prodi_anggota VARCHAR(50) NOT NULL,
-    no_hp_anggota VARCHAR(15) NULL,
-    status_anggota ENUM('aktif', 'nonaktif') NOT NULL DEFAULT 'aktif',
-    tgl_daftar_anggota DATE NOT NULL,
-    jumlah_poin INT NOT NULL DEFAULT 0,
-    PRIMARY KEY (id_anggota),
-    UNIQUE KEY uq_anggota_no (no_anggota),
-    UNIQUE KEY uq_anggota_nim (nim_anggota)
+-- Tabel: kategori
+CREATE TABLE kategori (
+  id_kategori INT NOT NULL AUTO_INCREMENT,
+  nama_kategori VARCHAR(50) NOT NULL,
+  PRIMARY KEY (id_kategori),
+  UNIQUE KEY uq_kategori_nama (nama_kategori)
 ) ENGINE=InnoDB;
 
--- Tabel Barang
-CREATE TABLE barang (
-    id_barang INT NOT NULL AUTO_INCREMENT,
-    kode_barang VARCHAR(10) NOT NULL,
-    nama_barang VARCHAR(100) NOT NULL,
-    kategori_barang ENUM('ATK', 'makanan', 'minuman', 'elektronik') NOT NULL,
-    harga_jual_barang DECIMAL(12,2) NOT NULL,
-    stok_barang INT NOT NULL DEFAULT 0,
-    stok_min_barang INT NOT NULL DEFAULT 5,
-    PRIMARY KEY (id_barang),
-    UNIQUE KEY uq_barang_kode (kode_barang),
-    CONSTRAINT ck_barang_stok CHECK (stok_barang >= 0), -- AB-03: Stok tidak boleh negatif
-    CONSTRAINT ck_barang_harga CHECK (harga_jual_barang >= 0)
+-- Tabel: produk
+CREATE TABLE produk (
+  id_produk INT NOT NULL AUTO_INCREMENT,
+  kode_produk VARCHAR(15) NOT NULL,
+  nama_produk VARCHAR(100) NOT NULL,
+  id_kategori INT NOT NULL,
+  harga_jual DECIMAL(12,2) NOT NULL,
+  stok_produk INT NOT NULL DEFAULT 0,
+  stok_min_produk INT NOT NULL DEFAULT 5,
+  PRIMARY KEY (id_produk),
+  UNIQUE KEY uq_produk_kode (kode_produk),
+  CONSTRAINT fk_produk_kategori FOREIGN KEY (id_kategori) REFERENCES kategori (id_kategori),
+  CONSTRAINT ck_produk_harga CHECK (harga_jual >= 0),
+  CONSTRAINT ck_produk_stok CHECK (stok_produk >= 0)
 ) ENGINE=InnoDB;
 
--- Tabel Pemasok
-CREATE TABLE pemasok (
-    id_pemasok INT NOT NULL AUTO_INCREMENT,
-    nama_pemasok VARCHAR(100) NOT NULL,
-    telepon_pemasok VARCHAR(15) NOT NULL,
-    alamat_pemasok TEXT NOT NULL,
-    PRIMARY KEY (id_pemasok)
+-- ============================================================
+-- 4. Membuat Tabel Transaksi dan Pendukungnya
+-- ============================================================
+
+-- Tabel: transaksi (Kepala Transaksi Umum)
+CREATE TABLE transaksi (
+  id_transaksi INT NOT NULL AUTO_INCREMENT,
+  no_transaksi CHAR(14) NOT NULL,
+  tgl_transaksi DATETIME NOT NULL,
+  id_pelanggan INT NOT NULL,
+  total_transaksi DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+  PRIMARY KEY (id_transaksi),
+  UNIQUE KEY uq_transaksi_no (no_transaksi),
+  CONSTRAINT fk_transaksi_pelanggan FOREIGN KEY (id_pelanggan) REFERENCES pelanggan (id_pelanggan)
 ) ENGINE=InnoDB;
 
--- ---------------------------------------------------------------------
--- 3. PEMBUATAN TABEL TRANSAKSI (KEPALA & DETAIL)
--- ---------------------------------------------------------------------
-
--- Tabel Penjualan (Kepala Transaksi)
-CREATE TABLE penjualan (
-    id_penjualan INT NOT NULL AUTO_INCREMENT,
-    no_nota_penjualan CHAR(12) NOT NULL,
-    tgl_penjualan DATETIME NOT NULL,
-    id_petugas SMALLINT NOT NULL,
-    id_anggota INT NULL,
-    bayar_penjualan DECIMAL(12,2) NOT NULL,
-    PRIMARY KEY (id_penjualan),
-    UNIQUE KEY uq_penjualan_nota (no_nota_penjualan), -- AB-01: No nota unik
-    CONSTRAINT fk_penjualan_petugas FOREIGN KEY (id_petugas) REFERENCES petugas (id_petugas),
-    CONSTRAINT fk_penjualan_anggota FOREIGN KEY (id_anggota) REFERENCES anggota (id_anggota) ON DELETE SET NULL
+-- Tabel: pesanan
+CREATE TABLE pesanan (
+  id_pesanan INT NOT NULL AUTO_INCREMENT,
+  id_transaksi INT NOT NULL,
+  status_pesanan ENUM('pending', 'dibayar', 'dikirim', 'selesai', 'batal') NOT NULL DEFAULT 'pending',
+  catatan_pesanan TEXT NULL,
+  PRIMARY KEY (id_pesanan),
+  CONSTRAINT fk_pesanan_transaksi FOREIGN KEY (id_transaksi) REFERENCES transaksi (id_transaksi) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- Tabel Detail Penjualan
-CREATE TABLE detail_penjualan (
-    id_penjualan INT NOT NULL,
-    id_barang INT NOT NULL,
-    qty_detail_penjualan SMALLINT NOT NULL,
-    harga_satuan_detail_penjualan DECIMAL(12,2) NOT NULL, -- AB-04: Harga simpan saat transaksi
-    PRIMARY KEY (id_penjualan, id_barang),
-    CONSTRAINT fk_detail_penjualan FOREIGN KEY (id_penjualan) REFERENCES penjualan (id_penjualan) ON DELETE CASCADE,
-    CONSTRAINT fk_detail_barang FOREIGN KEY (id_barang) REFERENCES barang (id_barang),
-    CONSTRAINT ck_detail_qty CHECK (qty_detail_penjualan > 0)
+-- Tabel: detail_pesanan (Entitas Asosiatif untuk rincian produk dalam pesanan)
+CREATE TABLE detail_pesanan (
+  id_pesanan INT NOT NULL,
+  id_produk INT NOT NULL,
+  qty_pesanan INT NOT NULL,
+  harga_satuan DECIMAL(12,2) NOT NULL,
+  PRIMARY KEY (id_pesanan, id_produk),
+  CONSTRAINT fk_detail_pesanan FOREIGN KEY (id_pesanan) REFERENCES pesanan (id_pesanan) ON DELETE CASCADE,
+  CONSTRAINT fk_detail_produk FOREIGN KEY (id_produk) REFERENCES produk (id_produk),
+  CONSTRAINT ck_detail_qty CHECK (qty_pesanan > 0)
 ) ENGINE=InnoDB;
 
--- Tabel Pembelian (Kepala Faktur)
-CREATE TABLE pembelian (
-    id_pembelian INT NOT NULL AUTO_INCREMENT,
-    id_pemasok INT NOT NULL,
-    no_faktur_pembelian VARCHAR(50) NOT NULL,
-    tgl_pembelian DATE NOT NULL,
-    status_pembelian ENUM('pesan', 'diterima') NOT NULL DEFAULT 'pesan',
-    PRIMARY KEY (id_pembelian),
-    CONSTRAINT fk_pembelian_pemasok FOREIGN KEY (id_pemasok) REFERENCES pemasok (id_pemasok)
+-- Tabel: pembayaran
+CREATE TABLE pembayaran (
+  id_pembayaran INT NOT NULL AUTO_INCREMENT,
+  id_pesanan INT NOT NULL,
+  tgl_pembayaran DATETIME NOT NULL,
+  metode_pembayaran VARCHAR(50) NOT NULL,
+  jumlah_bayar DECIMAL(12,2) NOT NULL,
+  status_pembayaran ENUM('sukses', 'gagal', 'pending') NOT NULL DEFAULT 'pending',
+  PRIMARY KEY (id_pembayaran),
+  CONSTRAINT fk_pembayaran_pesanan FOREIGN KEY (id_pesanan) REFERENCES pesanan (id_pesanan) ON DELETE CASCADE,
+  CONSTRAINT ck_jumlah_bayar CHECK (jumlah_bayar >= 0)
 ) ENGINE=InnoDB;
 
--- Tabel Detail Pembelian
-CREATE TABLE detail_pembelian (
-    id_pembelian INT NOT NULL,
-    id_barang INT NOT NULL,
-    qty_detail_pembelian INT NOT NULL,
-    harga_beli_detail_pembelian DECIMAL(12,2) NOT NULL,
-    PRIMARY KEY (id_pembelian, id_barang),
-    CONSTRAINT fk_dp_pembelian FOREIGN KEY (id_pembelian) REFERENCES pembelian (id_pembelian) ON DELETE CASCADE,
-    CONSTRAINT fk_dp_barang FOREIGN KEY (id_barang) REFERENCES barang (id_barang),
-    CONSTRAINT ck_dp_qty CHECK (qty_detail_pembelian > 0)
+-- Tabel: pengiriman
+CREATE TABLE pengiriman (
+  id_pengiriman INT NOT NULL AUTO_INCREMENT,
+  id_pesanan INT NOT NULL,
+  no_resi VARCHAR(50) NULL,
+  kurir VARCHAR(50) NOT NULL,
+  biaya_ongkir DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  status_pengiriman ENUM('proses', 'dikirim', 'diterima') NOT NULL DEFAULT 'proses',
+  PRIMARY KEY (id_pengiriman),
+  CONSTRAINT fk_pengiriman_pesanan FOREIGN KEY (id_pesanan) REFERENCES pesanan (id_pesanan) ON DELETE CASCADE
 ) ENGINE=InnoDB;
