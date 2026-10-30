@@ -1,0 +1,69 @@
+Laporan Praktikum Basis Data
+
+Nama: Shinta Amelia
+
+NPM: 25430064
+
+Kelas: C
+
+Program Studi: S1 Ilmu Komputer
+
+Pertemuan: 6
+
+---
+
+## 1. Tujuan Praktikum
+1. Mampu mengimplementasikan manipulasi data (DML) seperti `INSERT`, `UPDATE`, dan `DELETE` pada basis data MariaDB/MySQL.
+2. Mampu mengeksekusi skrip DDL dan DML menggunakan perintah `SOURCE` melalui CLI MariaDB secara batch.
+3. Mampu melakukan uji integritas data serta menguji batasan pengaman Safe Update Mode (`sql_safe_updates`).
+4. Memverifikasi keberhasilan pemuatan data master dan transaksi menggunakan fungsi agregasi seperti `COUNT(*)`.
+
+## 2. Ringkasan Dasar Teori
+Data Manipulation Language (DML) adalah sekumpulan perintah SQL yang digunakan untuk mengelola dan memanipulasi data di dalam tabel basis data. Perintah `SOURCE` memungkinkan eksekusi berkas skrip SQL eksternal secara langsung dari CLI. Selain itu, fitur keamanan *Safe Update Mode* (`sql_safe_updates`) berfungsi untuk melindungi integritas data dengan mencegah eksekusi perintah `UPDATE` atau `DELETE` massal tanpa menyertakan klausul `WHERE` yang menggunakan kolom kunci (*Primary Key* atau *Indexed Key*).
+
+## 3. Hasil Langkah Percobaan
+- Mengeksekusi skrip DDL struktur basis data `toko_064` secara batch menggunakan perintah `SOURCE`.
+- Memuat data master dan data sampel transaksi melalui berkas skrip DML `p06_data_064.sql`.
+- Melakukan verifikasi jumlah data transaksi pesanan menggunakan fungsi `SELECT COUNT(*) FROM pesanan;`.
+- Menguji mekanisme perlindungan *Safe Update Mode* yang memicu galat saat pembaruan data tanpa klausul `WHERE` yang spesifik.
+
+### Bukti Verifikasi Jumlah Data Pesanan (COUNT)
+![Verifikasi Count Pesanan](image/p06_count_pesanan.png)
+
+### Bukti Pengujian Safe Update Mode (ERROR 1175)
+![Pengujian Safe Update Error](image/p06_error_safe_update.png)
+
+## 4. Jawaban Titik Analisis
+1. **Titik Analisis 1:** Kegagalan eksekusi perintah `SOURCE` dengan `error: 13` atau `error: 2` umumnya disebabkan oleh path direktori yang mengandung spasi atau salah pengetikan nama berkas. Solusinya adalah memastikan berkas berada pada folder tanpa spasi (seperti `D:\basisdata_25430064\`) dan memanggil path secara akurat.
+2. **Titik Analisis 2:** Pesan `ERROR 1175` muncul karena fitur *Safe Update Mode* aktif untuk mencegah modifikasi atau penghapusan data secara tidak sengaja pada seluruh baris tabel akibat tidak adanya filter `WHERE` pada kolom kunci.
+
+## 5. Hasil Latihan dan Modifikasi
+1. Melakukan pengujian kueri verifikasi agregasi gabungan seluruh tabel menggunakan `UNION ALL` untuk memastikan seluruh data master dan transaksi terisi secara konsisten.
+2. Memastikan penyesuaian nama kolom harga pada tabel produk menggunakan `harga_jual` agar perintah manipulasi data dan pengujian berjalan lancar tanpa kendala *unknown column*.
+
+## 6. Tugas Mandiri: Milestone Proyek 6
+- **Tema Proyek:** Toko Daring (Toko Daring Shinta)
+- **Nama Basis Data:** `toko_064`
+- **Implementasi Data DML:** Memuat data sampel komprehensif yang mencakup tabel `pelanggan`, `kategori`, `produk`, `transaksi`, dan `pesanan` (dengan total 20 baris data valid pada tabel pesanan).
+- **Hasil Berkas:** Menyusun skrip dan laporan lengkap di dalam direktori repositori `Laporan/p06_laporan_25430064.md`.
+
+## 7. Pembahasan dan Kendala
+Kendala awal sempat terjadi berupa galat `ERROR 1054: Unknown column 'harga_produk'` saat mencoba pengujian `UPDATE` akibat ketidaksesuaian nama kolom harga, serta kendala path direktori saat perintah `SOURCE`. Kendala diselesaikan dengan memeriksa skema tabel melalui `DESCRIBE produk;`, menyesuaikan nama kolom menjadi `harga_jual`, serta memindahkan berkas kerja ke folder utama tanpa spasi.
+
+## 8. Kesimpulan
+Praktikum Modul 6 berhasil diselesaikan dengan sukses. Skrip DDL dan DML berhasil dieksekusi menggunakan perintah `SOURCE`, basis data `toko_064` terisi oleh data transaksi yang valid, serta mekanisme pengujian *Safe Update Mode* terbukti aktif melindungi integritas data.
+
+## 9. Pernyataan Penggunaan AI
+Penggunaan AI (Gemini) dimanfaatkan untuk membantu mendiagnosis pesan kesalahan path CLI dan struktur kueri pengujian basis data.
+
+## 10. Bukti Git
+- **Tautan Repositori:** https://github.com/shintaamelia/basisdata_25430064
+- **Commit Hash Pertemuan 6:** 50497b8 
+
+---
+
+## Checklist
+- [x] Berkas `p06_laporan_25430064.md` Terbuat di Folder Laporan
+- [x] Eksekusi `SOURCE` DDL & DML Berhasil
+- [x] Tangkapan Layar `p06_count_pesanan.png` & `p06_error_safe_update.png` Terlampir
+- [x] Jawaban Titik Analisis Lengkap
